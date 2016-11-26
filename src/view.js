@@ -45,9 +45,9 @@ const View = (function(){
 		onAddItem: function (e, item) {
 			if (e) e.preventDefault();
 
-			var imputTextVal = document.querySelector("#inputItem") && document.querySelector("#inputItem").value;
+			let inputTextVal = document.querySelector("#inputItem") && document.querySelector("#inputItem").value;
 
-			var itemValue = item || imputTextVal;
+			let itemValue = item || inputTextVal;
 			Actions.trigger("items.addItem", {category: itemValue});
 		},
 
@@ -61,12 +61,12 @@ const View = (function(){
 			if (this.state === null) return;
 			this.removeListeners();
 
-			var button = `<input type='submit' id='btnAdd' value='Add'>`;
-			var search = `<input type='text' id='inputItem'/>`;
+			let button = `<input type='submit' id='btnAdd' value='Add'>`;
+			let search = `<input type='text' id='inputItem'/>`;
 
-			var box = `<form> ${search} ${button} </form>`;
+			let box = `<form> ${search} ${button} </form>`;
 
-			var items = this.state.reduce((prev, next, index, array) => {
+			let items = this.state.reduce((prev, next, index, array) => {
 				prev += `<li data-itemId=${next.id}>
 							Category: ${next.category.toUpperCase()}
 						</li>`;
@@ -75,6 +75,7 @@ const View = (function(){
 			}, `<ul id='itemsList'>`);
 
 			document.querySelector("#container").innerHTML = box + items;
+			document.querySelector("#inputItem").focus();
 
 			//Adding EventListeners
 			this.eventsListeners("#btnAdd", "click", this.onAddItem);

@@ -31,7 +31,7 @@ const Model = (function(){
 
 	function onAddItem (obj) {
 		obj.id = (state.items.length > 0) ? state.items[state.items.length - 1].id + 1 : 1;
-		state.items.push(obj);
+		state.items = [...state.items, obj];
 		publish();
 	}
 

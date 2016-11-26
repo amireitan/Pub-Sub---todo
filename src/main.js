@@ -1,9 +1,5 @@
-// var Model = require("./model.js");
-// var View  = require("./view.js");
-import * as Model from "./model.js";
-import * as View from "./view.js";
-
-
+import Model from "./model.js";
+import View from "./view.js";
 
 
 /************************************
