@@ -1,38 +1,41 @@
-var Actions = (function(){
+const Actions = (function(){
 
-  var observers = {
-  	"items"            : "items", // "items"  : [func, func, func]
-  	"items.addItem"    : "items.addItem",
-  	"items.removeItem" : "items.removeItem",
+  let observers = {
+  	"items"              : "items", // "items"  : [func, func, func]
+  	"items.addItem"      : "items.addItem",
+  	"items.removeItem"   : "items.removeItem",
+    "items.initialState" : "items.initialState"
   };
 
   return {
-    on: function (topic, listener) {
-    	  // console.log("%c Actions.on - Adding a callback for an action - ", "background:pink", topic);
-      	observers[topic] = (observers[topic] && Array.isArray(observers[topic])) ?
-      	observers[topic] : [];
+    on: function (actionType, listener) {
+      	observers[actionType] = (observers[actionType] && Array.isArray(observers[actionType])) ?
+      	observers[actionType] : [];
 
         //Add listener
-        observers[topic] = [...observers[topic], listener];
-
-      	console.log("ON FUNCTION OBSERVERS: ", observers);
+        observers[actionType] = [...observers[actionType], listener];
     },
 
-    trigger: function (topic, payload) {
-      // console.log("%c Actions.trigger - Triggering an action - ","background:green", topic);
-      if (!observers[topic]) return;
+    trigger: function (actionType, payload) {
+      if (!observers[actionType]) return;
 
-      observers[topic].forEach( item => item (typeof payload !== 'undefined' ? payload : {}));
+      observers[actionType].forEach( item => item (typeof payload !== 'undefined' ? payload : {}));
     },
 
-    remove: function (topic, observer){
-    	if (!this.observers[topic]) return;
+    remove: function (actionType, observer) {
+    	if (!this.observers[actionType]) return;
+      let observerIndex = this.observers[actionType].indexOf(observer);
 
-    	if (this.observers[topic].indexOf(observer) !== -1) observers.splice(index, 1);
+    	if (observerIndex !== -1) {
+        observers[actionType] = [
+          ...observers[actionType].slice(0, observerIndex),
+          ...observers[actionType].slice(observerIndex + 1)
+        ];        
+      }
     }
   };
 
 })();
 
 
-module.exports = Actions;
+export default Actions;

@@ -1,14 +1,12 @@
-const Actions = require("./actions.js");
+import Actions from "./actions.js";
 
 const Model = (function(){
 
-	init();
-
 	let state = {
 		items: [
-			{id: 1, category:"business"},
-			{id: 2, category:"colture"},
-			{id: 3, category:"men"},
+			{id: 1, title:"item1"},
+			{id: 2, title:"item2"},
+			{id: 3, title:"item3"},
 		]
 	};
 
@@ -16,6 +14,7 @@ const Model = (function(){
 		//Add Events
 		Actions.on("items.removeItem", onRemoveItem);
 		Actions.on("items.addItem", onAddItem);
+		Actions.on("items.initialState", publish);
 	}
 
 	function publish(){
@@ -35,7 +34,8 @@ const Model = (function(){
 		publish();
 	}
 
+	init();
 })();
 
-module.exports = Model;
+export default Model;
 

@@ -1,4 +1,5 @@
-const Actions = require("./actions.js");
+import Actions from "./actions.js";
+import Model from "./model.js";
 
 const View = (function(){
 
@@ -7,19 +8,26 @@ const View = (function(){
 		state: null,
 		events: {},
 
-		init: function () {
- 			//Add Actions Handlers
+		init: function (selector) {
+ 			document.querySelector(selector).innerHTML = this.createSearchBar() + this.createItemsContainer();
+			document.querySelector("#inputItem").focus();
+			this.addEventListeners();
+
  			Actions.on("items", this.onChange.bind(this));
+ 			Actions.trigger("items.initialState");
+
+			this.setState();
+		},
+
+		addEventListeners: function(){
+			this.eventsListeners("#btnAdd", "click", this.onAddItem);
+			this.eventsListeners("#items", "click", this.onRemoveItem);
 		},
 
 		setState: function (data){
 			if (!data) return;
-
-			this.state = data.reduce((prev, next) => {
-				return prev.concat([next]);
-			}, []);
-
-			this.render();
+			this.state = data;
+			this.renderItems();
 		},
 
 		eventsListeners: function(selector, actionType, eventHandler) {
@@ -31,13 +39,11 @@ const View = (function(){
 
 		removeListeners: function() {
 			for (let prop in this.events) {
-				document.querySelector(prop).removeEventListener(this.events[prop], prop)
+				document.querySelector(prop).removeEventListener(this.events[prop], prop);
 			}
 		},
 
 		onChange: function (data) {
-			console.log("%c View - Onchange function", "background: yellow");
-			console.log("Data: ", data);
 			this.state = null;
 			this.setState(data);
 		},
@@ -48,7 +54,7 @@ const View = (function(){
 			let inputTextVal = document.querySelector("#inputItem") && document.querySelector("#inputItem").value;
 
 			let itemValue = item || inputTextVal;
-			Actions.trigger("items.addItem", {category: itemValue});
+			Actions.trigger("items.addItem", {title: itemValue});
 		},
 
 		onRemoveItem: function (e) {
@@ -57,42 +63,35 @@ const View = (function(){
 			}
 		},
 
-		render: function () {
-			if (this.state === null) return;
-			this.removeListeners();
+		createItemsContainer: function(){
+			return `<section id="items"></section>`;
+		},
 
+		createSearchBar: function(){
 			let button = `<input type='submit' id='btnAdd' value='Add'>`;
 			let search = `<input type='text' id='inputItem'/>`;
 
-			let box = `<form> ${search} ${button} </form>`;
+			return `<form> ${search} ${button} </form>`;
+		},
 
-			let items = this.state.reduce((prev, next, index, array) => {
-				prev += `<li data-itemId=${next.id}>
-							Category: ${next.category.toUpperCase()}
-						</li>`;
-				return prev  += (index === array.length - 1) ? `</ul>` : "";
-
+		createItems:function(state) {
+			let Items = state.reduce((prev, next, index, array) => {
+				return prev += `<li data-itemId=${next.id}> ${next.title}</li>`;
 			}, `<ul id='itemsList'>`);
+			return Items += `</ul>`;
+		},
 
-			document.querySelector("#container").innerHTML = box + items;
-			document.querySelector("#inputItem").focus();
-
-			//Adding EventListeners
-			this.eventsListeners("#btnAdd", "click", this.onAddItem);
-			this.eventsListeners("#itemsList", "click", this.onRemoveItem);
+		renderItems: function () {
+			if (this.state === null) return;
+			let items = this.createItems(this.state);
+			document.querySelector("#items").innerHTML = items;
 		}
 	}
 
-	Methods.init();
-
 	return {
-		init         : Methods.init,
-		onChange     : Methods.onChange,
-		onAddItem    : Methods.onAddItem,
-		onRemoveItem : Methods.onRemoveItem,
+		init: Methods.init.bind(Methods),
 	}
 
 })();
 
-
-module.exports = View;
+export default View;
